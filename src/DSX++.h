@@ -13,7 +13,7 @@ namespace DSX {
     enum ErrorCode {
         UDPClientInitError = 1,
         UDPClientTerminateError,
-        SendPayloadError 
+        SendPayloadError
     };
 
     extern const int Success;
@@ -26,12 +26,18 @@ namespace DSX {
     int init(void);
 
 
+    /**
+     * Clears the current payload of instruction of DSX++ client so
+     * that a new set of instructions can be added
+     */
+    void clearPayload(void);
+
+
     int sendPayload(void);
 
 
 #if 0
-    int createNewPayload();
-    
+
     int setLeftTrigger();
 
     int setRightTrigger();
@@ -50,7 +56,7 @@ namespace DSX {
      * @return 0 if the client was successfully terminated,
      *         or an error code otherwise (see enum class ErrorCode)
      */
-    int terminate(void); 
+    int terminate(void);
 }
 
 #endif // DSXPP_H

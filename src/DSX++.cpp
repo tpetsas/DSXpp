@@ -25,7 +25,13 @@ namespace DSX
                         res << ")" << std::endl;
             return UDPClientInitError;
         }
+        payload.instructions.clear();
         return Success;
+    }
+
+    void clearPayload(void)
+    {
+        payload.instructions.clear();
     }
 
     int sendPayload(void)
@@ -44,6 +50,7 @@ namespace DSX
 
     int terminate(void)
     {
+        payload.instructions.clear();
         int res = UDPClient::terminate();
         if (res != UDPClient::Success) {
             std::cerr << "* UDPClient failed to terminate! (err: " <<
