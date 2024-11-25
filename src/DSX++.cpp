@@ -5,11 +5,39 @@
 
 #include "DSX++.h"
 #include "UDPClient.h"
-#include "DSXProtocol.h"
 #include <iostream>
 
 #define DSX_SERVER "127.0.0.1"  // UDP Server of DSX (localhost)
 #define DSX_SERVER_PORT 6969    // The default DSX Server port
+
+
+// internal functions
+
+/**
+* Adds an adaptive trigger instruction to the provided payload
+* This instruction configures the trigger mode and parameters
+* for the adaptive trigger
+* @param payload   The payload to receive the instruction
+* @param controllerIndex    The index of the controller to receive the trigger
+* change
+* @param trigger   The trigger (e.g., L2 or R2) to be configured
+* @param triggerMode The mode to set for the adaptive trigger
+* @param extras (optional) Additional parameters required by the trigger
+*/
+void addAdaptiveTriggerToPayload(Payload &payload, int controllerIndex,
+        Trigger trigger, TriggerMode triggerMode, std::vector<int> extras)
+{
+    // TODO: add bound checks for all the parameters
+    std::vector<int> parameters = {controllerIndex, trigger, triggerMode};
+
+    if (!extras.empty()) {
+        parameters.insert(parameters.end(), extras.begin(), extras.end());
+    }
+
+    Instruction instruction(TriggerUpdate, parameters);
+    payload.instructions.push_back(instruction);
+}
+
 
 namespace DSX
 {
@@ -32,6 +60,18 @@ namespace DSX
     void clearPayload(void)
     {
         payload.instructions.clear();
+    }
+
+    // NOTE: extras is an optional parameter (check DSX++.h for mor info)
+    void setLeftTrigger(TriggerMode triggerMode, std::vector<int> extras)
+    {
+        addAdaptiveTriggerToPayload(payload, 0, Left, triggerMode, extras);
+    }
+
+    // NOTE: extras is an optional parameter (check DSX++.h for mor info)
+    void setRightTrigger(TriggerMode triggerMode, std::vector<int> extras)
+    {
+        addAdaptiveTriggerToPayload(payload, 0, Right, triggerMode, extras);
     }
 
     int sendPayload(void)
