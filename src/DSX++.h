@@ -17,6 +17,7 @@ namespace DSX {
     enum ErrorCode {
         UDPClientInitError = 1,
         UDPClientTerminateError,
+        EmptyPayloadError,
         SendPayloadError
     };
 

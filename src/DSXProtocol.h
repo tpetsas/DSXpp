@@ -6,6 +6,7 @@
 #ifndef DSXPROTOCOL_H
 #define DSXPROTOCOL_H
 
+#include "nlohmann/json.hpp"
 #include <string>
 #include <vector>
 
@@ -108,6 +109,9 @@ struct Instruction
 
     Instruction(InstructionType type, std::vector<int> parameters) :
         type(type), parameters(parameters) {}
+
+    // implemented in DSX++.cpp
+    nlohmann::json toJson();
 };
 
 struct Payload
@@ -118,6 +122,10 @@ struct Payload
     
     Payload(std::vector<Instruction> instructions) :
         instructions(instructions) {}
+
+    // implemented in DSX++.cpp
+    nlohmann::json toJson();
+
 };
 
 struct ServerResponse

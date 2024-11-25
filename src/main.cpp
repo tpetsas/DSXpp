@@ -16,6 +16,9 @@ int main (void)
     }
     std::cout << "* DSX++ client initialized successfully!" << std::endl;
 
+    DSX::setLeftTrigger(GameCube);
+    DSX::setRightTrigger(Hard);
+
     if (DSX::sendPayload() != DSX::Success) {
         std::cerr << "* DSX++ client failed to send data!" << std::endl;
         return -2;

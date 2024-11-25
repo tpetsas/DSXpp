@@ -10,20 +10,45 @@
 #define DSX_SERVER "127.0.0.1"  // UDP Server of DSX (localhost)
 #define DSX_SERVER_PORT 6969    // The default DSX Server port
 
+using json=nlohmann::json;
 
-// internal functions
+// Implementations of some DSX structures' functions
+// (declared in DSXProtocol)
+
+json Instruction::toJson()
+{
+    json j = {
+        { "type", type },
+        { "parameters", parameters }
+    };
+    return j;
+}
+
+json Payload::toJson()
+{
+    std::vector<json> jsonInstructions;
+    for (auto instruction : instructions) {
+        jsonInstructions.push_back( instruction.toJson() );
+    }
+    json j = {
+        { "instructions", jsonInstructions}
+    };
+    return j;
+}
+
+// Internal functions
 
 /**
-* Adds an adaptive trigger instruction to the provided payload
-* This instruction configures the trigger mode and parameters
-* for the adaptive trigger
-* @param payload   The payload to receive the instruction
-* @param controllerIndex    The index of the controller to receive the trigger
-* change
-* @param trigger   The trigger (e.g., L2 or R2) to be configured
-* @param triggerMode The mode to set for the adaptive trigger
-* @param extras (optional) Additional parameters required by the trigger
-*/
+ * Adds an adaptive trigger instruction to the provided payload
+ * This instruction configures the trigger mode and parameters
+ * for the adaptive trigger
+ * @param payload  The payload to receive the instruction
+ * @param controllerIndex    The index of the controller to receive the trigger
+ * change
+ * @param trigger  The trigger (e.g., L2 or R2) to be configured
+ * @param triggerMode The mode to set for the adaptive trigger
+ * @param extras (optional) Additional parameters required by the trigger
+ * */
 void addAdaptiveTriggerToPayload(Payload &payload, int controllerIndex,
         Trigger trigger, TriggerMode triggerMode, std::vector<int> extras)
 {
@@ -37,7 +62,6 @@ void addAdaptiveTriggerToPayload(Payload &payload, int controllerIndex,
     Instruction instruction(TriggerUpdate, parameters);
     payload.instructions.push_back(instruction);
 }
-
 
 namespace DSX
 {
@@ -76,8 +100,10 @@ namespace DSX
 
     int sendPayload(void)
     {
-        std::string payloadStr =
-            "{\"instructions\":[{\"type\":1,\"parameters\":[0,1,5]}]}";
+        if (payload.instructions.empty())
+            return EmptyPayloadError;
+
+        std::string payloadStr = payload.toJson().dump();
 
         int res = UDPClient::send(payloadStr);
         if (res != UDPClient::Success) {
