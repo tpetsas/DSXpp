@@ -142,7 +142,7 @@ enum ConnectionType
     Usb,
     Bluetooth,
     Dongle
-}
+};
 
 enum DeviceType
 {
@@ -154,7 +154,7 @@ enum DeviceType
     PSVR2LeftController,
     PSVR2RightController,
     AccessVontroller
-}
+};
 #endif
 
 #endif // DSXPROTOCOL_H

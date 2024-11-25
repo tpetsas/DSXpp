@@ -16,8 +16,13 @@ int main (void)
     }
     std::cout << "* DSX++ client initialized successfully!" << std::endl;
 
+#ifdef DSX_V3
+    DSX::setLeftTrigger(Weapon, {2, 6, 8});
+    DSX::setRightTrigger(Vibration, {2, 8, 20});
+#else
     DSX::setLeftTrigger(GameCube);
     DSX::setRightTrigger(Hard);
+#endif
 
     if (DSX::sendPayload() != DSX::Success) {
         std::cerr << "* DSX++ client failed to send data!" << std::endl;
