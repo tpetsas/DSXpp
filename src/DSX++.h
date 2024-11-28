@@ -42,36 +42,89 @@ namespace DSX {
      */
     int sendPayload(void);
 
+    // Main DSX++ API
+
+    // NOTE: The controller index used is 0. If there's a need of another
+    // index, a new functions should be introduced that take an extra parameter
+    //
+    // For details about setting fields like extras, brightnetss, etc.,
+    // check the examples here:
+    // https://github.com/Paliverse/DSX/tree/main/Mod%20System%20(DSX%20v3)#adaptive-triggers
+
     /**
     * Sets an adaptive trigger mode to the left trigger (i.e., L2)
     * @param triggerMode The mode to set for the adaptive trigger
     * @param extras (optional) Additional parameters required by the trigger
-    *
-    * NOTE: The controller index used is 0. If there's a need of another
-    * index, a new function should be introduced that takes an extra parameter
-    *
-    * extras: for more info about this argument check the following page:
-    * https://github.com/Paliverse/DSX/tree/main/Mod%20System%20(DSX%20v3)#adaptive-triggers
     */
     void setLeftTrigger(TriggerMode triggerMode, std::vector<int> extras={});
 
     /**
     * Sets an adaptive trigger mode to the right trigger (i.e., R2)
-    * @param triggerMode The mode to set for the adaptive trigger
-    * @param extras (optional) Additional parameters required by the trigger
-    *
-    * NOTE: The controller index used is 0. If there's a need of another
-    * index, a new function should be introduced that takes an extra parameter
-    *
-    * extras: for more info about this argument check the following page:
-    * https://github.com/Paliverse/DSX/tree/main/Mod%20System%20(DSX%20v3)#adaptive-triggers
+    * @param   triggerMode The mode to set for the adaptive trigger
+    * @param   extras (optional) Additional parameters required by the trigger
     */
     void setRightTrigger(TriggerMode triggerMode, std::vector<int> extras={});
 
-    // TODO: Add support for:
-    // - CustomTriggerMode
-    // - PlayerLED
-    // - MicLED
+    /**
+     * Sets an custom adaptive trigger mode to the left trigger (i.e., L2)
+     *
+     * NOTE: This allows for more complex trigger configurations, including a
+     * custom value mode and additional parameters
+     *
+     * @param customMode   The custom value mode for more detailed trigger
+     * control
+     * @param extras   Additional parameters required by the custom trigger
+     * mode
+     */
+    void setLeftCustomTrigger(CustomTriggerValueMode customMode,
+                                                    std::vector<int> extras);
+    /**
+     * Sets an custom adaptive trigger mode to the right trigger (i.e., R2)
+     *
+     * NOTE: This allows for more complex trigger configurations, including a
+     * custom value mode and additional parameters
+     *
+     * @param customMode   The custom value mode for more detailed trigger
+     * control
+     * @param extras   Additional parameters required by the custom trigger
+     * mode
+     */
+    void setRightCustomTrigger(CustomTriggerValueMode customMode,
+                                                    std::vector<int> extras);
+    /**
+     * Sets an RGB LEDs update to the current controller's payload
+     * @param red     The red (R) component of the color
+     * @param green   The green (G) component of the color
+     * @param blue    The blue (B) component of the color
+     * @param brightness    The brightness level of the LEDs
+     */
+    void setRGB(int red, int green, int blue, int brightness);
+
+    /**
+     * Sets a player LED indicative color update to the current controller's
+     * payload
+     * playerLED   player LED configuration to apply
+     */
+    void setPlayerLED(PlayerLEDNewRevision playerLED);
+
+    /**
+     * Sets a microphone LED update (mute/unmute) to the current controller's
+     * payload
+     * micLED  The microphone LED configuration to apply
+     */
+    void setMicLED(MicLEDMode micLED);
+
+    /**
+     * Resets the controller's setting to user's predefined settings configured
+     * in the DSX app for the current controller's payload
+     */
+     void reset(void);
+
+    /**
+     * Sets a request to get the DSX status (list of devices) to the current
+     * controller's payload
+     */
+    void setGetDSXStatus(void);
 
     /**
      * Initializes a DSX++ client

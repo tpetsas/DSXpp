@@ -53,7 +53,11 @@ void addAdaptiveTriggerToPayload(Payload &payload, int controllerIndex,
         Trigger trigger, TriggerMode triggerMode, std::vector<int> extras)
 {
     // TODO: add bound checks for all the parameters
-    std::vector<int> parameters = {controllerIndex, trigger, triggerMode};
+    std::vector<int> parameters = {
+        controllerIndex,
+        trigger,
+        triggerMode
+    };
 
     if (!extras.empty()) {
         parameters.insert(parameters.end(), extras.begin(), extras.end());
@@ -62,6 +66,138 @@ void addAdaptiveTriggerToPayload(Payload &payload, int controllerIndex,
     Instruction instruction(TriggerUpdate, parameters);
     payload.instructions.push_back(instruction);
 }
+
+
+/**
+ * Adds a custom adaptive trigger instruction to the provided payload
+ * This instruction configures the trigger mode and parameters
+ * for the adaptive trigger
+ * @param payload  The payload to receive the instruction
+ * @param controllerIndex    The index of the controller to receive the trigger
+ * change
+ * @param trigger  The trigger (e.g., L2 or R2) to be configured
+ * @param triggerMode  The mode to set for the adaptive trigger
+ * @param customMode   The custom value mode for more detailed trigger
+ * @param extras (optional) Additional parameters required by the trigger
+ * */
+void addCustomAdaptiveTriggerToPayload(Payload &payload, int controllerIndex,
+                                Trigger trigger,
+                                CustomTriggerValueMode customMode,
+                                std::vector<int> extras)
+{
+    // TODO: add bound checks for all the parameters
+    std::vector<int> parameters = {
+        controllerIndex,
+        trigger,
+        CustomTriggerValue,
+        customMode
+    };
+
+    if (!extras.empty()) {
+        parameters.insert(parameters.end(), extras.begin(), extras.end());
+    }
+
+    Instruction instruction(TriggerUpdate, parameters);
+    payload.instructions.push_back(instruction);
+}
+
+
+/**
+ * Adds an RGB LEDs update to the provided payload
+ * @param payload  The payload to receive the instruction
+ * @param controllerIndex  The index of the controller to receive the RGB
+ * change
+ * @param red     The red (R) component of the color
+ * @param green   The green (G) component of the color
+ * @param blue    The blue (B) component of the color
+ * @param brightness    The brightness level of the LEDs
+ */
+void addRGBToPayload(Payload &payload, int controllerIndex,
+                                            int red, int green,
+                                                int blue, int brightness)
+{
+
+    // TODO: add bound checks for all the parameters
+    std::vector<int> parameters = {
+        controllerIndex,
+        red,
+        green,
+        blue,
+        brightness
+    };
+
+    Instruction instruction(RGBUpdate, parameters);
+    payload.instructions.push_back(instruction);
+}
+
+/**
+ * Adds a player LED indicative color update to the provided payload
+ * @param payload  The payload to receive the instruction
+ * @param controllerIndex  The index of the controller to receive the LED
+ * change
+ * @param playerLED   player LED configuration to apply
+ */
+void addPlayerLEDToPayload(Payload &payload, int controllerIndex,
+                                            PlayerLEDNewRevision playerLED)
+{
+    // TODO: add bound checks for all the parameters
+    std::vector<int> parameters = {
+        controllerIndex,
+        playerLED
+    };
+
+    Instruction instruction(PlayerLEDRevisionUpdate, parameters);
+    payload.instructions.push_back(instruction);
+}
+
+/**
+ * Adds a microphone LED update (mute/unmute) to the provided payload
+ * @param micLED  The microphone LED configuration to apply
+ */
+void addMicLEDToPayload(Payload &payload, int controllerIndex,
+                                                    MicLEDMode micLED)
+{
+    // TODO: add bound checks for all the parameters
+    std::vector<int> parameters = {
+        controllerIndex,
+        micLED
+    };
+
+    Instruction instruction(MicLED, parameters);
+    payload.instructions.push_back(instruction);
+}
+
+/**
+ * Adds a reset setting instruction to the provided payload to reset the
+ * settings back to the controller's setting to user's predefined settings
+ * configured in the DSX app for the current controller's payload
+ */
+ void addResetToPayload(Payload &payload, int controllerIndex)
+ {
+    // TODO: add bound checks for all the parameters
+    std::vector<int> parameters = {
+        controllerIndex
+    };
+
+    Instruction instruction(ResetToUserSettings, parameters);
+    payload.instructions.push_back(instruction);
+ }
+
+/**
+ * Adds a request to get the DSX status (list of devices) to the provided
+ * payload
+ */
+void addGetDSXStatus(Payload &payload, int controllerIndex)
+{
+    // TODO: add bound checks for all the parameters
+    std::vector<int> parameters = {
+        controllerIndex
+    };
+
+    Instruction instruction(GetDSXStatus, parameters);
+    payload.instructions.push_back(instruction);
+}
+
 
 namespace DSX
 {
@@ -87,15 +223,56 @@ namespace DSX
     }
 
     // NOTE: extras is an optional parameter (check DSX++.h for mor info)
+
     void setLeftTrigger(TriggerMode triggerMode, std::vector<int> extras)
     {
         addAdaptiveTriggerToPayload(payload, 0, Left, triggerMode, extras);
     }
 
-    // NOTE: extras is an optional parameter (check DSX++.h for mor info)
     void setRightTrigger(TriggerMode triggerMode, std::vector<int> extras)
     {
         addAdaptiveTriggerToPayload(payload, 0, Right, triggerMode, extras);
+    }
+
+    void setLeftCustomTrigger(CustomTriggerValueMode customMode,
+                                                    std::vector<int> extras)
+    {
+        addCustomAdaptiveTriggerToPayload(payload, 0, Left,
+                                                    customMode, extras);
+    }
+
+    void setRightCustomTrigger(CustomTriggerValueMode customMode,
+                                                    std::vector<int> extras)
+
+    {
+        addCustomAdaptiveTriggerToPayload(payload, 0, Right,
+                                                    customMode, extras);
+    }
+
+    void setRGB(int red, int green, int blue, int brightness)
+    {
+        addRGBToPayload(payload, 0, red, green, blue,
+                                                            brightness);
+    }
+
+    void setPlayerLED(PlayerLEDNewRevision playerLED)
+    {
+        addPlayerLEDToPayload(payload, 0, playerLED);
+    }
+
+    void setMicLED(MicLEDMode micLED)
+    {
+        addMicLEDToPayload(payload, 0, micLED);
+    }
+
+    void reset(void)
+    {
+        addResetToPayload(payload, 0);
+    }
+
+    void setGetDSXStatus(void)
+    {
+        addGetDSXStatus(payload, 0);
     }
 
     int sendPayload(void)

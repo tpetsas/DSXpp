@@ -90,13 +90,13 @@ enum Trigger
 
 enum InstructionType
 {
-    InvalidType,
+    GetDSXStatus,
     TriggerUpdate,
     RGBUpdate,
     PlayerLED,
     TriggerThreshold,
     MicLED,
-    PlayerLEDNewRevision,
+    PlayerLEDRevisionUpdate,
     ResetToUserSettings
 };
 
@@ -105,7 +105,7 @@ struct Instruction
     InstructionType type;
     std::vector<int> parameters;
 
-    Instruction() : type(InvalidType), parameters({}) {}
+    Instruction() : type(GetDSXStatus), parameters({}) {}
 
     Instruction(InstructionType type, std::vector<int> parameters) :
         type(type), parameters(parameters) {}
