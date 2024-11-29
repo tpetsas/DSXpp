@@ -17,15 +17,27 @@ endif()
 # to build targeting DSX Version 2, you need to provide the above option
 # e.g., cmake -B build . -DDSX_V2=ON
 
-
 add_library(DSX++ STATIC
     src/UDPClient.cpp
     src/DSX++.cpp
 )
 
+include(FetchContent)
+set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
+FetchContent_Declare(ftxui
+  GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+  GIT_TAG v5.0.0
+)
+FetchContent_MakeAvailable(ftxui)
+
 add_executable(DSXTest
     src/main.cpp
 )
 
-target_link_libraries(DSXTest DSX++)
+target_link_libraries(DSXTest
+    PRIVATE DSX++
+    PRIVATE ftxui::screen
+    PRIVATE ftxui::dom
+    PRIVATE ftxui::component
+)
 

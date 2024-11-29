@@ -243,7 +243,6 @@ namespace DSX
 
     void setRightCustomTrigger(CustomTriggerValueMode customMode,
                                                     std::vector<int> extras)
-
     {
         addCustomAdaptiveTriggerToPayload(payload, 0, Right,
                                                     customMode, extras);
