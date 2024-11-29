@@ -1,3 +1,0 @@
-[submodule "src/thirdparty/PDCurses"]
-	path = src/thirdparty/PDCurses
-	url = https://github.com/wmcbrine/PDCurses.git
