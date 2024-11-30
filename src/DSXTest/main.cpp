@@ -8,6 +8,7 @@
 
 #include <string>  // for basic_string, string, allocator
 #include <vector>  // for vector
+#include <unordered_map>
 
 #include "ftxui/component/captured_mouse.hpp"  // for ftxui
 #include "ftxui/component/component.hpp"  // for Dropdown, Horizontal, Vertical
@@ -16,6 +17,55 @@
 #include "ftxui/component/component_options.hpp"   // for ButtonOption
 #include "ftxui/dom/elements.hpp"  // for gauge, separator, text, vbox, operator|, Element, border
 #include "ftxui/screen/color.hpp"  // for Color, Color::Blue, Color::Green, Color::Red
+
+using namespace ftxui;
+
+const std::vector<std::string> modes = {
+    "Normal",
+    "GameCube",
+    "VerySoft",
+    "Soft",
+    "Hard",
+    "VeryHard",
+    "Hardest",
+    "Rigid",
+    "VibrateTrigger",
+    "Choppy",
+    "Medium",
+    "VibrateTriggerPulse",
+    "CustomTriggerValue",
+    "Resistance",
+    "Bow",
+    "Galloping",
+    "SemiAutomaticGun",
+    "AutomaticGun",
+    "Machine",
+
+    "VibrateTrigger10Hz",
+    "TriggerOff",
+    "Feedback",
+    "Weapon",
+    "Vibration",
+    "SlopeFeedback",
+    "MultiplePositionFeedback",
+    "MultiplePositionVibration",
+};
+
+struct Extra
+{
+    const std::string name;
+    Component component;
+    int &value;
+
+    Extra(std::string name, Component component, int &value) :
+    name(name), component(component), value(value) {}
+};
+
+std::unordered_map<std::string, std::vector<Extra>> modeExtras;
+bool hasExtras(std::string mode)
+{
+    return modeExtras.find(mode) != modeExtras.end();
+}
 
 void resetTriggers(int &L2, int &R2)
 {
@@ -33,55 +83,79 @@ void sendTriggers(int L2, int R2)
         std::cerr << "* DSX++ client failed to send data!" << std::endl;
 }
 
+int freq = 100;
+int start = 5;
+int force = 4;
+
 int main (void)
 {
-    using namespace ftxui;
 
     int L2 = 0;
     int R2 = 0;
 
-    std::vector<std::string> modes = {
-        "Normal",
-        "GameCube",
-        "VerySoft",
-        "Soft",
-        "Hard",
-        "VeryHard",
-        "Hardest",
-        "Rigid",
-        "VibrateTrigger",
-        "Choppy",
-        "Medium",
-        "VibrateTriggerPulse",
-        "CustomTriggerValue",
-        "Resistance",
-        "Bow",
-        "Galloping",
-        "SemiAutomaticGun",
-        "AutomaticGun",
-        "Machine",
-
-        "VibrateTrigger10Hz",
-        "TriggerOff",
-        "Feedback",
-        "Weapon",
-        "Vibration",
-        "SlopeFeedback",
-        "MultiplePositionFeedback",
-        "MultiplePositionVibration",
-    };
+    std::unordered_map<std::string, std::vector<Component>> modeComponents;
 
     if ( DSX::init() != DSX::Success ) {
         std::cerr << "* DSX++ client failed to initialize!" << std::endl;
         return -1;
     }
-    auto info = Renderer([&] {
+
+    auto settings = Renderer([&] {
         return window(text("Settings"),
             vbox({
                 text("> L2 addaptive trigger  = " + modes[L2]),
                 text("> R2 addaptive trigger  = " + modes[R2]),
             })
         ) | flex;
+    });
+
+    auto frequencySlider = Slider("Frequency: ", &freq, 0, 256, 1);
+    auto startSlider = Slider("Start: ", &start, 0, 9, 1);
+    auto forceSlider = Slider("Force: ", &force, 0, 8, 1);
+
+    modeExtras = {
+        {
+            "VibrateTrigger", {
+                Extra("Frequency", frequencySlider, freq)
+            }
+        },
+        {
+            "Resistance", {
+                Extra("Start", startSlider, start),
+                Extra("Force", forceSlider, force),
+            }
+        },
+    };
+
+    auto extrasL2Container = Container::Vertical({
+          frequencySlider,
+          startSlider,
+          forceSlider,
+    });
+
+    auto extrasL2 = Renderer(extrasL2Container, [&] {
+
+        if (hasExtras( modes[L2] )) {
+            std::vector<Element> elements;
+            elements.push_back(text(modes[L2] + " extras:          "));
+            elements.push_back(text(""));
+            for (auto extra : modeExtras.at( modes[L2] )) {
+                elements.push_back (
+                    hbox(extra.component->Render(),
+                    text("(" + std::to_string(extra.value) +")"))
+                );
+            }
+            elements.push_back(text(""));
+            return window(text("L2 Extras"),
+                    vbox(elements)
+            ) | flex;
+        }
+
+            return window(text("L2 Extras"),
+                vbox({
+                    text(modes[L2] + " ( no extras )"),
+                })
+            ) | flex;
     });
 
     auto layout = Container::Vertical({
@@ -99,8 +173,9 @@ int main (void)
         }),
         Container::Horizontal({
             Dropdown(&modes, &L2),
+            extrasL2,
             Dropdown(&modes, &R2),
-            info,
+            settings,
             Button("🚀 Send", [&] { sendTriggers(L2, R2); }, ButtonOption::Animated(Color::Blue)),
             Button("💥 Reset", [&] { resetTriggers(L2, R2); }, ButtonOption::Animated(Color::Red)),
         }),
