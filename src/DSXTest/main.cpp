@@ -41,6 +41,8 @@ const std::vector<std::string> modes = {
     "AutomaticGun",
     "Machine",
 
+    // DSX V3.1+
+
     "VibrateTrigger10Hz",
     "TriggerOff",
     "Feedback",
@@ -50,6 +52,27 @@ const std::vector<std::string> modes = {
     "MultiplePositionFeedback",
     "MultiplePositionVibration",
 };
+
+
+const std::vector<std::string> customModes  = {
+    "OFF",
+    "Rigid",
+    "RigidA",
+    "RigidB",
+    "RigidAB",
+    "Pulse",
+    "PulseA",
+    "PulseB",
+    "PulseAB",
+    "VibrateResistance",
+    "VibrateResistanceA",
+    "VibrateResistanceB",
+    "VibrateResistanceAB",
+    "VibratePulse",
+    "VibratePulseA",
+    "VibratePulsB",
+    "VibratePulseAB",
+ };
 
 struct Extra
 {
@@ -84,11 +107,35 @@ void sendTriggers(int L2, int R2)
 }
 
 int freq = 100;
-int start = 5;
+int start = 4;
+int end = 4;
 int force = 4;
+int snapforce = 4;
+int customMode = 0;
+
+#define DEFAULT_FORCE 128
+int force1 = DEFAULT_FORCE;
+int force2 = DEFAULT_FORCE;
+int force3 = DEFAULT_FORCE;
+int force4 = DEFAULT_FORCE;
+int force5 = DEFAULT_FORCE;
+int force6 = DEFAULT_FORCE;
+int force7 = DEFAULT_FORCE;
+
+int startFoot = 4;
+int secondFoot = 4;
+
+int strengthA = 3;
+int strengthB = 3;
+
+// v3.1+
+int startPosition = 5;
+int resistanceStrength = 4;
+
 
 int main (void)
 {
+    using namespace ftxui;
 
     int L2 = 0;
     int R2 = 0;
@@ -100,18 +147,34 @@ int main (void)
         return -1;
     }
 
-    auto settings = Renderer([&] {
-        return window(text("Settings"),
-            vbox({
-                text("> L2 addaptive trigger  = " + modes[L2]),
-                text("> R2 addaptive trigger  = " + modes[R2]),
-            })
-        ) | flex;
-    });
-
     auto frequencySlider = Slider("Frequency: ", &freq, 0, 256, 1);
-    auto startSlider = Slider("Start: ", &start, 0, 9, 1);
+    auto startSlider = Slider("Start: ", &start, 0, 8, 1);
+    auto endSlider = Slider("End: ", &end, 0, 8, 1);
+    auto startFootSlider = Slider("StartFoot: ", &startFoot, 0, 8, 1);
+    auto secondFootSlider = Slider("secondFoot: ", &secondFoot, 0, 8, 1);
     auto forceSlider = Slider("Force: ", &force, 0, 8, 1);
+    auto snapforceSlider = Slider("SnapForce: ", &snapforce, 0, 8, 1);
+    auto force1Slider = Slider("Force #1: ", &force1, 0, 256, 1);
+    auto force2Slider = Slider("Force #2: ", &force2, 0, 256, 1);
+    auto force3Slider = Slider("Force #3: ", &force3, 0, 256, 1);
+    auto force4Slider = Slider("Force #4: ", &force4, 0, 256, 1);
+    auto force5Slider = Slider("Force #5: ", &force5, 0, 256, 1);
+    auto force6Slider = Slider("Force #6: ", &force6, 0, 256, 1);
+    auto force7Slider = Slider("Force #7: ", &force7, 0, 256, 1);
+    auto strengthASlider = Slider("Strength A: ", &strengthA, 0, 7, 1);
+    auto strengthBSlider = Slider("Strength B: ", &strengthB, 0, 7, 1);
+
+
+    auto startPositionSlider = Slider("StartPos: ", &startPosition, 1, 9, 1);
+    auto resistanceStrengthSlider = Slider("Resistance: ", &resistanceStrength, 1, 8, 1);
+
+    std::vector<Extra> automaticGun =
+    {
+        Extra("Start", startSlider, start),
+        Extra("End", endSlider, end),
+        Extra("Force", forceSlider, force),
+    };
+
 
     modeExtras = {
         {
@@ -125,24 +188,101 @@ int main (void)
                 Extra("Force", forceSlider, force),
             }
         },
+        {
+            "CustomTriggerValue", {
+                Extra("Force #1", force1Slider, force1),
+                Extra("Force #2", force2Slider, force2),
+                Extra("Force #3", force3Slider, force3),
+                Extra("Force #4", force4Slider, force4),
+                Extra("Force #5", force5Slider, force5),
+                Extra("Force #6", force6Slider, force6),
+                Extra("Force #7", force7Slider, force7),
+            }
+        },
+        {
+            "Bow", {
+                Extra("Start", startSlider, start),
+                Extra("End", endSlider, end),
+                Extra("Force", forceSlider, force),
+                Extra("SnapForce", snapforceSlider, snapforce),
+            }
+        },
+        {
+            "Galloping", {
+                Extra("Start", startSlider, start),
+                Extra("End", endSlider, end),
+                Extra("StartFoot", startFootSlider, startFoot),
+                Extra("SecondFoot", secondFootSlider, secondFoot),
+                Extra("Frequency", frequencySlider, freq)
+            }
+        },
+        // NOTE: the following is used for SemiAutomaticGun too
+        {
+            "AutomaticGun", automaticGun
+        },
+        {
+            "SemiAutomaticGun", automaticGun
+        },
+        {
+            "Machine", {
+                Extra("Start", startSlider, start),
+                Extra("End", endSlider, end),
+                Extra("StrengthA", strengthASlider, strengthA),
+                Extra("StrengthB", strengthBSlider, strengthB),
+                Extra("Frequency", frequencySlider, freq)
+            }
+        },
+        {
+            "Feedback", {
+                Extra("StartPos", startPositionSlider, startPosition),
+                Extra("Resistance", resistanceStrengthSlider,
+                                                    resistanceStrength),
+            }
+        },
+
     };
 
+
+	auto menu = Menu(&customModes, &customMode, MenuOption());
+
     auto extrasL2Container = Container::Vertical({
-          frequencySlider,
-          startSlider,
-          forceSlider,
+        menu,
+		frequencySlider,
+        startSlider,
+        endSlider,
+        strengthASlider,
+        strengthBSlider,
+        startFootSlider,
+        secondFootSlider,
+        forceSlider,
+        snapforceSlider,
+        force1Slider,
+        force2Slider,
+        force3Slider,
+        force4Slider,
+        force5Slider,
+        force6Slider,
+        force7Slider,
+        startPositionSlider,
+        resistanceStrengthSlider,
     });
 
     auto extrasL2 = Renderer(extrasL2Container, [&] {
 
         if (hasExtras( modes[L2] )) {
             std::vector<Element> elements;
+
+            if (modes[L2] == "CustomTriggerValue")
+                elements.push_back(menu->Render());
+
             elements.push_back(text(modes[L2] + " extras:          "));
             elements.push_back(text(""));
-            for (auto extra : modeExtras.at( modes[L2] )) {
+            auto extrasVector = modeExtras.at( modes[L2] );
+            for (const auto &extra : extrasVector) {
                 elements.push_back (
                     hbox(extra.component->Render(),
                     text("(" + std::to_string(extra.value) +")"))
+
                 );
             }
             elements.push_back(text(""));
@@ -151,11 +291,34 @@ int main (void)
             ) | flex;
         }
 
-            return window(text("L2 Extras"),
-                vbox({
-                    text(modes[L2] + " ( no extras )"),
-                })
-            ) | flex;
+        return window(text("L2 Extras"),
+            vbox({
+                text(modes[L2] + " ( no extras )"),
+            })
+        ) | flex;
+    });
+
+    auto settings = Renderer([&] {
+        std::vector<Element> elements;
+        elements.push_back( text("⯍ L2 addaptive trigger  = " + modes[L2]) );
+
+        if (hasExtras( modes[L2] )) {
+            std::string extrasAllValues = "   ⯌ extras: {";
+            auto extrasVector = modeExtras.at( modes[L2] );
+            for (const auto &extra : extrasVector) {
+                extrasAllValues += std::to_string(extra.value);
+                if (&extra != &extrasVector.back())
+                    extrasAllValues += ", ";
+            }
+            extrasAllValues += "}";
+            elements.push_back(text(extrasAllValues.c_str()));
+        }
+
+        elements.push_back( text("⯍ R2 addaptive trigger  = " + modes[R2]) );
+
+        return window(text("Settings"),
+            vbox(elements)
+        ) | flex;
     });
 
     auto layout = Container::Vertical({
@@ -183,9 +346,11 @@ int main (void)
         Renderer([]{ return text(L"");}),
     });
 
+    auto screen = ScreenInteractive::Fullscreen();
 
+    //auto screen = ScreenInteractive::FullScreen();
+    //auto screen = ScreenInteractive::FitComponent();
     //auto screen = ScreenInteractive::FullscreenAlternateScreen();
-    auto screen = ScreenInteractive::FitComponent();
     screen.Loop(layout);
 
     if ( DSX::terminate() != DSX::Success ) {
