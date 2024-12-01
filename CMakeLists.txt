@@ -22,6 +22,8 @@ add_library(DSX++ STATIC
     src/DSX++.cpp
 )
 
+# build DSXTest CLI app
+
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 FetchContent_Declare(ftxui
@@ -44,4 +46,15 @@ target_link_libraries(DSXTest
     PRIVATE ftxui::dom
     PRIVATE ftxui::component
 )
+
+# build DSXSample app
+
+add_executable(DSXSample
+    src/DSXSample/sample.cpp
+)
+
+target_link_libraries(DSXSample
+    PRIVATE DSX++
+)
+
 
