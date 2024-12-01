@@ -217,6 +217,39 @@ namespace DSX
         return Success;
     }
 
+    void setGetDSXStatus(void)
+    {
+        addGetDSXStatus(payload, 0);
+    }
+
+    int sendPayload(void)
+    {
+        if (payload.instructions.empty())
+            return EmptyPayloadError;
+
+        std::string payloadStr = payload.toJson().dump();
+
+        int res = UDPClient::send(payloadStr);
+        if (res != UDPClient::Success) {
+            std::cerr << "* UDPClient failed to send payload! (err: " <<
+                        res << ")" << std::endl;
+            return SendPayloadError;
+        }
+        return Success;
+    }
+
+    int terminate(void)
+    {
+        payload.instructions.clear();
+        int res = UDPClient::terminate();
+        if (res != UDPClient::Success) {
+            std::cerr << "* UDPClient failed to terminate! (err: " <<
+                        res << ")" << std::endl;
+            return UDPClientTerminateError;
+        }
+        return Success;
+    }
+
     void clearPayload(void)
     {
         payload.instructions.clear();
@@ -269,36 +302,48 @@ namespace DSX
         addResetToPayload(payload, 0);
     }
 
-    void setGetDSXStatus(void)
+    // controllerIndex overloads
+
+    void setLeftTrigger(int controllerIndex, TriggerMode triggerMode, std::vector<int> extras)
     {
-        addGetDSXStatus(payload, 0);
+        addAdaptiveTriggerToPayload(payload, controllerIndex, Left, triggerMode, extras);
     }
 
-    int sendPayload(void)
+    void setRightTrigger(int controllerIndex, TriggerMode triggerMode, std::vector<int> extras)
     {
-        if (payload.instructions.empty())
-            return EmptyPayloadError;
-
-        std::string payloadStr = payload.toJson().dump();
-
-        int res = UDPClient::send(payloadStr);
-        if (res != UDPClient::Success) {
-            std::cerr << "* UDPClient failed to send payload! (err: " <<
-                        res << ")" << std::endl;
-            return SendPayloadError;
-        }
-        return Success;
+        addAdaptiveTriggerToPayload(payload, controllerIndex, Right, triggerMode, extras);
     }
 
-    int terminate(void)
+    void setLeftCustomTrigger(int controllerIndex, CustomTriggerValueMode customMode,
+                                                    std::vector<int> extras)
     {
-        payload.instructions.clear();
-        int res = UDPClient::terminate();
-        if (res != UDPClient::Success) {
-            std::cerr << "* UDPClient failed to terminate! (err: " <<
-                        res << ")" << std::endl;
-            return UDPClientTerminateError;
-        }
-        return Success;
+        addCustomAdaptiveTriggerToPayload(payload, controllerIndex,
+                                                    Left, customMode, extras);
+    }
+    void setRightCustomTrigger(int controllerIndex, CustomTriggerValueMode customMode,
+                                                    std::vector<int> extras)
+    {
+        addCustomAdaptiveTriggerToPayload(payload, controllerIndex,
+                                                    Right, customMode, extras);
+    }
+    void setRGB(int controllerIndex, int red, int green, int blue, int brightness)
+    {
+        addRGBToPayload(payload, controllerIndex, red, green, blue,
+                                                            brightness);
+    }
+
+    void setPlayerLED(int controllerIndex, PlayerLEDNewRevision playerLED)
+    {
+        addPlayerLEDToPayload(payload, controllerIndex, playerLED);
+    }
+
+    void setMicLED(int controllerIndex, MicLEDMode micLED)
+    {
+        addMicLEDToPayload(payload, controllerIndex, micLED);
+    }
+
+    void reset(int controllerIndex)
+    {
+        addResetToPayload(payload, controllerIndex);
     }
 }
