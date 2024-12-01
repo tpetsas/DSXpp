@@ -132,6 +132,25 @@ int strengthB = 3;
 int startPosition = 5;
 int resistanceStrength = 4;
 
+int weaponStart = 3;
+int weaponEnd = 5;
+int amplitude = 4;
+int vibrationFreq = 20;
+
+int slopeStart = 4;
+int slopeEnd = 5;
+int slopeResistanceStart = 4;
+int slopeResistanceEnd = 4;
+
+#define DEFAULT_REGION 4
+#define REGIONS 10
+std::array<int, REGIONS> regions;
+std::vector<Component> regionSliders;
+
+//regions.fill(DEFAULT_REGION);
+
+
+
 
 int main (void)
 {
@@ -164,9 +183,24 @@ int main (void)
     auto strengthASlider = Slider("Strength A: ", &strengthA, 0, 7, 1);
     auto strengthBSlider = Slider("Strength B: ", &strengthB, 0, 7, 1);
 
-
     auto startPositionSlider = Slider("StartPos: ", &startPosition, 1, 9, 1);
     auto resistanceStrengthSlider = Slider("Resistance: ", &resistanceStrength, 1, 8, 1);
+    auto weaponStartSlider = Slider("Start: ", &weaponStart, 2, 7, 1);
+    auto weaponEndSlider = Slider("End: ", &weaponEnd, 3, 8, 1);
+    auto amplitudeSlider = Slider("Amplitude: ", &amplitude, 1, 8, 1);
+    auto vibrationFreqSlider = Slider("Frequency: ", &vibrationFreq, 1, 40, 1);
+    auto slopeStartSlider = Slider("Start: ", &slopeStart, 1, 8, 1);
+    auto slopeEndSlider = Slider("End: ", &slopeEnd, 2, 9, 1);
+    auto slopeResistanceStartSlider = Slider("Resistance Start: ", &slopeResistanceStart, 1, 8, 1);
+    auto slopeResistanceEndSlider = Slider("Resistance End: ", &slopeResistanceEnd, 2, 9, 1);
+    //auto Slider = Slider(": ", &, 1, 8, 1);
+    regions.fill(DEFAULT_REGION);
+    //for (int &region : regions) {
+    for (int i=0; i<regions.size(); ++i) {
+        regionSliders.push_back (
+            Slider("Region #" + std::to_string(i+1) + ": ", &regions[i], 0, 8, 1)
+        );
+    }
 
     std::vector<Extra> automaticGun =
     {
@@ -174,6 +208,13 @@ int main (void)
         Extra("End", endSlider, end),
         Extra("Force", forceSlider, force),
     };
+
+    std::vector<Extra> regionExtras;
+    for (int i = 0; i < regions.size(); ++i) {
+        regionExtras.push_back(
+            Extra("Region", regionSliders[i], regions[i])
+        );
+    }
 
 
     modeExtras = {
@@ -239,13 +280,38 @@ int main (void)
                                                     resistanceStrength),
             }
         },
-
+        {
+            "Weapon", {
+                Extra("WeaponStart", weaponStartSlider, weaponStart),
+                Extra("WeaponEnd", weaponEndSlider, weaponEnd),
+                Extra("Resistance", resistanceStrengthSlider,
+                                                    resistanceStrength),
+            }
+        },
+        {
+            "Vibration", {
+                Extra("StartPos", startPositionSlider, startPosition),
+                Extra("amplitude", amplitudeSlider, amplitude),
+                Extra("Frequency", vibrationFreqSlider, vibrationFreq),
+            }
+        },
+        {
+            "SlopeFeedback", {
+                Extra("Start", slopeStartSlider, slopeStart),
+                Extra("End", slopeEndSlider, slopeEnd),
+                Extra("Resistance Start", slopeResistanceStartSlider, slopeResistanceStart),
+                Extra("Resistance Start", slopeResistanceEndSlider, slopeResistanceEnd),
+            }
+        },
+        {
+            "MultiplePositionFeedback", regionExtras
+        },
     };
 
 
 	auto menu = Menu(&customModes, &customMode, MenuOption());
 
-    auto extrasL2Container = Container::Vertical({
+    std::vector<Component> extrasL2Components = {
         menu,
 		frequencySlider,
         startSlider,
@@ -264,9 +330,25 @@ int main (void)
         force6Slider,
         force7Slider,
         startPositionSlider,
+        weaponStartSlider,
+        weaponEndSlider,
         resistanceStrengthSlider,
-    });
+        amplitudeSlider,
+        vibrationFreqSlider,
+        slopeStartSlider,
+        slopeEndSlider,
+        slopeResistanceStartSlider,
+        slopeResistanceEndSlider,
+    };
 
+    extrasL2Components.insert (
+        extrasL2Components.end(),
+        regionSliders.begin(),
+        regionSliders.end()
+    );
+
+
+    auto extrasL2Container = Container::Vertical(extrasL2Components);
     auto extrasL2 = Renderer(extrasL2Container, [&] {
 
         if (hasExtras( modes[L2] )) {
@@ -346,11 +428,8 @@ int main (void)
         Renderer([]{ return text(L"");}),
     });
 
-    auto screen = ScreenInteractive::Fullscreen();
-
-    //auto screen = ScreenInteractive::FullScreen();
-    //auto screen = ScreenInteractive::FitComponent();
-    //auto screen = ScreenInteractive::FullscreenAlternateScreen();
+    //auto screen = ScreenInteractive::Fullscreen();
+    auto screen = ScreenInteractive::FitComponent();
     screen.Loop(layout);
 
     if ( DSX::terminate() != DSX::Success ) {
