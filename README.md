@@ -152,6 +152,7 @@ Open a PowerShell session and run the DSXTest.exe using the following command:
 
 A terminal interface will appear looking like this:
 
+![alt text](imgs/dsxtest-0.png?raw=true)
 
 You can use either the mouse or the keyboard to navigate through this
 [FTXUI]-based terminal user interface and choose the addaptive trigger
@@ -160,7 +161,7 @@ configuration you want to send down to your controller.
 It is recommended to use the keyboard for fine-grain adjustments, e.g., when
 setting a value using a slider.
 
-
+![alt text](imgs/dsxtest.png?raw=true)
 
 The :rocket:**Send** button will send the chosen configuration to the
 controller, while the :boom:**Reset** will wipe it from the client. If you
@@ -172,7 +173,6 @@ want to reset the state to the controller to what it was before using the
 
 There is a DSX sample file you can use as a starter when creating your
 own app: `src\DSXSample\sample.cpp`
-
 
 ``` C++
 #include <iostream>
@@ -215,6 +215,7 @@ You can run the `DSXSample.exe` on terminal similarly to the DSXTest.exe:
 ❯ .\Debug\DSXSample.exe
 ```
 
+![alt text](imgs/dsxsample.png?raw=true)
 
 ---
 ##  Project Roadmap
