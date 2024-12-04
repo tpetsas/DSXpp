@@ -98,12 +98,12 @@ Steam: **[DSX]**.
 Once that's  done, the DualSense Controller should auto connect to the App.
 
 In order to use the API, make sure to switch to either DSX v2:
-* steps here...
+* There should be a button on the top left of the app
 
-or DSX v3.1 (BETA at the time of writing)
-* steps here...
+or DSX v3.1 (BETA at the time of writing) — **recommended**
+* Follow the instructions here: [DSX — How to Switch Branch on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3330635677)
 
-*DSX v3 is not supported!*
+*DSX v3.0 is not supported!*
 
 Before getting started with DSX++, ensure your runtime environment meets the following requirements:
 
@@ -144,15 +144,79 @@ Install DSX++ using one of the following methods:
 
 ###  Usage
 
+[FTXUI]()
 **Addaptive Triggers CLI Testing app:**
 
-Run DSX++ using the following command:
+Open a PowerShell session and run the DSXTest.exe using the following command:
 
 ```sh
-❯ ./DSX++
+❯ .\Debug\DSXTest.exe
 ```
 
+A terminal interface will appear looking like this:
+
+
+You can use either the mouse or the keyboard to navigate through this
+[FTXUI]-based terminal user interface and choose the addaptive trigger
+configuration you want to send down to your controller.
+
+It is recommended to use the keyboard for fine-grain adjustments, e.g., when
+setting a value using a slider.
+
+
+
+The :rocket:**Send** button will send the chosen configuration to the
+controller, while the :boom:**Reset** will wipe it from the client. If you
+want to reset the state to the controller to what it was before using the
+`DSXTest.exe`, use the combination of :boom:**Reset** & :rocket:**Send**.
+
+
 **Getting started with sample code:**
+
+There is a DSX sample file you can use as a starter when creating your
+own app: `src\DSXSample\sample.cpp`
+
+
+``` C++
+#include <iostream>
+#include "DSX++.h"
+
+int main (void)
+{
+    if ( DSX::init() != DSX::Success ) {
+        std::cerr << "* DSX++ client failed to initialize!" << std::endl;
+        return -1;
+    }
+    std::cout << "* DSX++ client initialized successfully!" << std::endl;
+
+#ifdef DSX_V3
+    DSX::setLeftTrigger(Weapon, {2, 6, 8});
+    DSX::setRightTrigger(Vibration, {2, 8, 20});
+#else
+    DSX::setLeftTrigger(GameCube);
+    DSX::setRightTrigger(Hard);
+#endif
+
+    if (DSX::sendPayload() != DSX::Success) {
+        std::cerr << "* DSX++ client failed to send data!" << std::endl;
+        return -2;
+    }
+    std::cout << "* DSX++ client sent the data successfully!" << std::endl;
+
+    if ( DSX::terminate() != DSX::Success ) {
+        std::cerr << "* DSX++ client failed to terminate!" << std::endl;
+        return -3;
+    }
+    std::cout << "* DSX++ client terminated successfully!" << std::endl;
+
+    return 0;
+}
+```
+
+You can run the `DSXSample.exe` on terminal similarly to the DSXTest.exe:
+```
+❯ .\Debug\DSXSample.exe
+```
 
 
 ---
@@ -208,12 +272,13 @@ Run DSX++ using the following command:
 
 ##  License
 
-This project is protected under the [MIT License](https://opensource.org/license/mit), refer to the [LICENSE](XXX add file here) file.
+This project is protected under the [MIT License](https://opensource.org/license/mit), refer to the [LICENSE](https://github.com/tpetsas/DSXpp/blob/main/LICENSE) file.
 
 ---
 
 ##  Acknowledgments
 
-- List any resources, contributors, inspiration, etc. here.
+- [Paliverse](https://github.com/Paliverse) for making [DSX]
+- FTXUI
 
 ---
