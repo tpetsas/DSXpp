@@ -9,8 +9,9 @@ controller, i.e., Adaptive Triggers and Haptic Feedback on PC!
 	<!-- local repository, no metadata badges. --></p>
 <p align="center">Built with the tools and technologies:</p>
 <p align="center">
-	<img src="https://img.shields.io/badge/-CMake-darkslateblue?logo=cmake" "alt"="C++">
+	<img src="https://img.shields.io/badge/-CMake-darkslateblue?logo=cmake" "alt"="CMake">
     <img src="https://img.shields.io/badge/-C++-magenta?logo=cplusplus" "alt"="C++">
+    <img src="https://img.shields.io/badge/Vim-%2311AB00.svg?logo=vim&logoColor=white" alt="Vim">
 </p>
 <br>
 
