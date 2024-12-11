@@ -17,6 +17,11 @@ endif()
 # to build targeting DSX Version 2, you need to provide the above option
 # e.g., cmake -B build . -DDSX_V2=ON
 
+set(DEFAULT_BUILD_TYPE "Release")
+if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+  set(DEFAULT_BUILD_TYPE "Debug")
+endif()
+
 add_library(DSX++ STATIC
     src/UDPClient.cpp
     src/DSX++.cpp
