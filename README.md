@@ -268,6 +268,6 @@ This project is protected under the [MIT License](https://opensource.org/license
 ##  Acknowledgments
 
 - [Paliverse](https://github.com/Paliverse) for making [DSX]
-- FTXUI
+- [FTXUI](https://github.com/ArthurSonzogni/FTXUI)
 
 ---
