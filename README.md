@@ -228,7 +228,7 @@ You can run the `DSXSample.exe` on terminal similarly to the DSXTest.exe:
 
 ##  Contributing
 
-- **💬 [Join the Discussions](https://LOCAL//DSX++/discussions)**: Share your insights, provide feedback, or ask questions.
+- **💬 [Join the Discussions](https://github.com/tpetsas/DSXpp/discussions)**: Share your insights, provide feedback, or ask questions.
 - **🐛 [Report Issues](https://github.com/tpetsas/DSXpp/issues)**: Submit bugs found or log feature requests for the `DSX++` project.
 - **💡 [Submit Pull Requests](https://LOCAL//DSX++/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
 
