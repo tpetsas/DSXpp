@@ -230,7 +230,7 @@ You can run the `DSXSample.exe` on terminal similarly to the DSXTest.exe:
 
 - **💬 [Join the Discussions](https://github.com/tpetsas/DSXpp/discussions)**: Share your insights, provide feedback, or ask questions.
 - **🐛 [Report Issues](https://github.com/tpetsas/DSXpp/issues)**: Submit bugs found or log feature requests for the `DSX++` project.
-- **💡 [Submit Pull Requests](https://LOCAL//DSX++/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
+- **💡 [Submit Pull Requests](https://github.com/tpetsas/DSXpp/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
 
 <details closed>
 <summary>Contributing Guidelines</summary>
@@ -255,16 +255,6 @@ You can run the `DSXSample.exe` on terminal similarly to the DSXTest.exe:
    ```
 7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
 8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
-</details>
-
-<details closed>
-<summary>Contributor Graph</summary>
-<br>
-<p align="left">
-   <a href="https://LOCAL{//DSX++/}graphs/contributors">
-      <img src="https://contrib.rocks/image?repo=/DSX++">
-   </a>
-</p>
 </details>
 
 ---
